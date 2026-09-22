@@ -29,6 +29,19 @@ html, body {
   box-shadow: 0 0 40px rgba(0,0,0,0.8);
 }
 
+/* Botón flotante de música */
+.music-toggle {
+  position: absolute; top: 20px; right: 20px;
+  z-index: 50; background: rgba(45, 32, 38, 0.8);
+  border: 1px solid rgba(255,215,0,0.3);
+  color: #ffda66; width: 38px; height: 38px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 16px; backdrop-filter: blur(4px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  transition: transform 0.2s ease;
+}
+.music-toggle:active { transform: scale(0.9); }
+
 /* Fondo de destellos y corazones sutiles */
 .ambient-hearts {
   position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden;
@@ -184,19 +197,8 @@ html, body {
   box-shadow: 0 2px 4px rgba(0,0,0,0.25);
   z-index: 4;
 }
-/* Hoja izquierda pegada exactamente al borde izquierdo del tallo */
-.leaf.left  { 
-  left: calc(50% - 29px); 
-  transform-origin: right center; 
-  rotate: -15px; 
-}
-/* Hoja derecha pegada exactamente al borde derecho del tallo */
-.leaf.right { 
-  left: calc(50% + 3px);   
-  transform-origin: left center;  
-  rotate: 15px; 
-  border-radius: 0 120% 0 120%; 
-}
+.leaf.left  { left: calc(50% - 29px); transform-origin: right center; rotate: -15px; }
+.leaf.right { left: calc(50% + 3px);   transform-origin: left center;  rotate: 15px; border-radius: 0 120% 0 120%; }
 
 .leaf1 { bottom: 125px; }
 .leaf2 { bottom: 165px; }
@@ -306,7 +308,13 @@ html, body {
 </head>
 <body>
 
+<!-- Elemento de audio enlazado a tu archivo local en GitHub -->
+<audio id="bgMusic" src="FlorAmarilla.mp3" loop preload="auto"></audio>
+
 <div class="scene">
+  <!-- Botón para controlar la música manualmente -->
+  <button class="music-toggle" id="musicToggle" title="Silenciar / Reproducir música">🎵</button>
+
   <div class="ambient-hearts" id="ambientHearts"></div>
 
   <div class="header-box">
@@ -322,7 +330,7 @@ html, body {
   </div>
 
   <div class="plant-area" id="plantArea">
-    <!-- Tallo y Hojas laterales -->
+    <!-- Tallo y Hojas laterales limpias -->
     <div class="stem" id="stem"></div>
     <div class="leaf left leaf1" id="leaf1"></div>
     <div class="leaf right leaf2" id="leaf2"></div>
@@ -356,6 +364,23 @@ html, body {
 </div>
 
 <script>
+const bgMusic = document.getElementById('bgMusic');
+const musicToggle = document.getElementById('musicToggle');
+let musicStarted = false;
+
+// Control del botón de música
+musicToggle.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (bgMusic.paused) {
+    bgMusic.play().then(() => {
+      musicToggle.textContent = '🎵';
+    }).catch(err => console.log(err));
+  } else {
+    bgMusic.pause();
+    musicToggle.textContent = '🔇';
+  }
+});
+
 const ambientContainer = document.getElementById('ambientHearts');
 const symbols = ['🌻', '✨', '💛', '🌸'];
 for(let i=0; i<15; i++){
@@ -487,6 +512,14 @@ function createHeartConfetti() {
 }
 
 plantArea.addEventListener('click', () => {
+  // Iniciar la música automáticamente en el primer toque
+  if (!musicStarted) {
+    bgMusic.play().then(() => {
+      musicStarted = true;
+      musicToggle.textContent = '🎵';
+    }).catch(err => console.log("Audio autoplay prevented", err));
+  }
+
   if(step >= 4) return;
 
   if(step === 0) stem.style.height = '140px';
