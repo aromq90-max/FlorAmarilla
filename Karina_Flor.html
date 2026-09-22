@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Te amo porque...</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Quicksand:wght@400;500;600&display=swap');
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+  margin: 0; padding: 0; width: 100%; height: 100%;
+  overflow: hidden; background: #1a1518;
+  font-family: 'Quicksand', sans-serif;
+}
+
+.scene {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  height: 100vh;
+  height: 100dvh;
+  margin: 0 auto;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 25%, #2d2026 0%, #171114 70%, #0d0a0c 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 0 40px rgba(0,0,0,0.8);
+}
+
+/* Fondo de destellos y corazones sutiles */
+.ambient-hearts {
+  position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden;
+}
+.ambient-heart {
+  position: absolute; color: rgba(255, 215, 0, 0.12);
+  font-size: 14px; animation: floatUp linear infinite;
+}
+@keyframes floatUp {
+  0% { transform: translateY(105vh) scale(0.5); opacity: 0; }
+  50% { opacity: 0.8; }
+  100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+}
+
+/* Textos Principales */
+.header-box {
+  position: absolute; top: 6%; width: 88%; text-align: center; z-index: 10;
+}
+.title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(32px, 8vw, 42px);
+  font-weight: 600;
+  color: #fff3c4;
+  margin: 0 0 4px 0;
+  text-shadow: 0 2px 10px rgba(255,215,0,0.25);
+}
+.subtitle {
+  color: #e3c886;
+  font-size: 12px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* Razones dinámicas */
+.reasons-container {
+  position: absolute; top: 18%; width: 84%; left: 8%;
+  z-index: 12; min-height: 80px;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center;
+}
+.reason {
+  position: absolute; width: 100%;
+  opacity: 0; transform: translateY(10px) scale(0.95);
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 21px;
+  line-height: 1.4;
+  color: #fffaf0;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  pointer-events: none;
+}
+.reason.show {
+  opacity: 1; transform: translateY(0) scale(1);
+}
+
+.plant-area {
+  position: absolute; bottom: 7vh; left: 50%;
+  width: 280px; height: 380px;
+  transform: translateX(-50%);
+  z-index: 5; cursor: pointer;
+  display: flex; justify-content: center; align-items: flex-end;
+}
+
+/* Maceta */
+.pot {
+  position: absolute; bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 120px; height: 95px;
+  background: linear-gradient(135deg, #8c5836, #5c341b);
+  border-radius: 8px 8px 24px 24px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset 0 2px 5px rgba(255,255,255,0.1);
+  z-index: 4;
+  overflow: visible;
+}
+.pot::before {
+  content: ""; position: absolute; top: -10px; left: -8px;
+  width: 136px; height: 22px; border-radius: 6px;
+  background: linear-gradient(135deg, #a66a43, #734323);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* Contenedores laterales de rosas */
+.side-cluster-container {
+  position: absolute; bottom: 75px; width: 70px;
+  display: flex; flex-direction: column; align-items: center;
+  z-index: 5; pointer-events: none;
+}
+.side-cluster-container.left { left: -15px; }
+.side-cluster-container.right { right: -15px; }
+
+.pot-cluster {
+  position: absolute; bottom: 0;
+  display: flex; align-items: flex-end;
+  transform: scale(0) translateY(10px);
+  opacity: 0;
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.pot-cluster.show {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+.cluster-grass {
+  width: 8px; height: 18px;
+  background: linear-gradient(0deg, #3d6630, #78a16b);
+  border-radius: 50% 50% 0 0;
+  margin-right: -3px;
+  z-index: 1;
+}
+.cluster-roses-group {
+  display: flex; align-items: flex-end; position: relative;
+}
+.cluster-rose {
+  position: relative;
+  width: 18px; height: 18px;
+  z-index: 2;
+  margin-left: -5px;
+}
+.cluster-rose:first-child { margin-left: 0; }
+
+.rose-petal-layer {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: radial-gradient(circle, #ffb3c6 0%, #ff758c 60%, #d9385a 100%);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.rose-swirl-1, .rose-swirl-2 {
+  position: absolute; border-radius: 50%; border: 1px solid rgba(255,255,255,0.6);
+}
+.rose-swirl-1 { width: 10px; height: 10px; top: 2px; left: 2px; }
+.rose-swirl-2 { width: 5px; height: 5px; top: 6px; left: 6px; background: #fff0f3; }
+
+/* Tallo central */
+.stem {
+  position: absolute; bottom: 85px; left: 50%;
+  width: 6px; height: 0px;
+  transform: translateX(-50%);
+  border-radius: 4px;
+  background: linear-gradient(180deg, #78a16b, #436438);
+  transition: height 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: 3;
+}
+
+/* Hojas pegadas limpiamente a izquierda y derecha del tallo */
+.leaf {
+  position: absolute; 
+  width: 28px; height: 14px;
+  border-radius: 120% 0 120% 0;
+  background: linear-gradient(135deg, #a4e091, #4b7d3f);
+  border: 1px solid rgba(40, 70, 30, 0.4);
+  opacity: 0; transform: scale(0.1);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  z-index: 4;
+}
+/* Hoja izquierda pegada exactamente al borde izquierdo del tallo */
+.leaf.left  { 
+  left: calc(50% - 29px); 
+  transform-origin: right center; 
+  rotate: -15px; 
+}
+/* Hoja derecha pegada exactamente al borde derecho del tallo */
+.leaf.right { 
+  left: calc(50% + 3px);   
+  transform-origin: left center;  
+  rotate: 15px; 
+  border-radius: 0 120% 0 120%; 
+}
+
+.leaf1 { bottom: 125px; }
+.leaf2 { bottom: 165px; }
+.leaf3 { bottom: 205px; }
+.leaf4 { bottom: 245px; }
+
+.leaf.show { opacity: 1; transform: scale(1); }
+
+/* Girasol Principal (Arriba) */
+.flower {
+  position: absolute; left: 50%; bottom: 270px;
+  width: 140px; height: 140px;
+  transform: translateX(-50%) scale(0);
+  opacity: 0;
+  transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 6;
+}
+.flower.show { opacity: 1; transform: translateX(-50%) scale(1); }
+
+.petal {
+  position: absolute; left: 50%; top: 50%;
+  width: 34px; height: 68px;
+  transform-origin: 50% 100%;
+  border-radius: 50% 50% 40% 40%;
+  background: linear-gradient(to top, #ffaa00, #ffea00, #fff775);
+  box-shadow: 0 0 12px rgba(255,215,0,0.4);
+}
+.flower-center {
+  position: absolute; left: 50%; top: 50%;
+  width: 52px; height: 52px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, #3d1c02 40%, #210e01 80%);
+  border: 3px solid #572905;
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.8);
+  z-index: 7;
+}
+
+/* Instrucción inferior */
+.instruction {
+  position: absolute; bottom: 3vh; width: 100%;
+  text-align: center; z-index: 15;
+  color: #faeab9; font-size: 13px; font-weight: 500;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+  animation: pulseInstruction 2s infinite ease-in-out;
+}
+@keyframes pulseInstruction {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; transform: scale(1.02); }
+}
+
+/* Modal / Popup Romántico */
+.overlay {
+  position: fixed; inset: 0; z-index: 40;
+  background: rgba(13, 10, 12, 0.8);
+  backdrop-filter: blur(6px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.overlay.show { opacity: 1; pointer-events: auto; }
+
+.popup {
+  position: fixed; top: 50%; left: 50%;
+  width: 88%; max-width: 400px;
+  transform: translate(-50%, -50%) scale(0.8) translateY(20px);
+  z-index: 41; background: #261e23;
+  border: 1px solid rgba(255,215,0,0.3);
+  border-radius: 24px; padding: 32px 24px;
+  text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+  opacity: 0; pointer-events: none;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.popup.show {
+  opacity: 1; transform: translate(-50%, -50%) scale(1) translateY(0); pointer-events: auto;
+}
+.popup .tag {
+  color: #ffda66; font-size: 11px; letter-spacing: 3px;
+  text-transform: uppercase; margin-bottom: 8px; font-weight: 600;
+}
+.popup h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 34px; color: #fff; margin: 0 0 14px 0;
+}
+.popup p {
+  font-size: 14px; line-height: 1.7; color: #dcd0d4; margin: 0 0 24px 0;
+}
+.close-btn {
+  background: linear-gradient(135deg, #ffaa00, #ff758c);
+  color: #fff; border: none; border-radius: 50px;
+  padding: 12px 30px; font-size: 14px; font-weight: 600;
+  cursor: pointer; box-shadow: 0 4px 15px rgba(255,117,140,0.4);
+  transition: transform 0.2s ease;
+}
+.close-btn:active { transform: scale(0.95); }
+
+/* Confeti */
+.heart-confetti {
+  position: absolute; top: -20px; z-index: 50;
+  pointer-events: none; animation: fallHeart linear forwards;
+}
+@keyframes fallHeart {
+  0% { transform: translateY(0) rotate(0deg) scale(0.6); opacity: 1; }
+  100% { transform: translateY(105vh) rotate(720deg) scale(1.2); opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="scene">
+  <div class="ambient-hearts" id="ambientHearts"></div>
+
+  <div class="header-box">
+    <h1 class="title">Te amo porque...</h1>
+    <div class="subtitle">cada latido es una razón</div>
+  </div>
+
+  <div class="reasons-container" id="reasonsContainer">
+    <div class="reason" id="r1"></div>
+    <div class="reason" id="r2"></div>
+    <div class="reason" id="r3"></div>
+    <div class="reason" id="r4"></div>
+  </div>
+
+  <div class="plant-area" id="plantArea">
+    <!-- Tallo y Hojas laterales -->
+    <div class="stem" id="stem"></div>
+    <div class="leaf left leaf1" id="leaf1"></div>
+    <div class="leaf right leaf2" id="leaf2"></div>
+    <div class="leaf left leaf3" id="leaf3"></div>
+    <div class="leaf right leaf4" id="leaf4"></div>
+    
+    <!-- Girasol Principal -->
+    <div class="flower" id="flower"></div>
+
+    <!-- Maceta -->
+    <div class="pot"></div>
+
+    <!-- Grupos de 3 rosas ordenados a los costados de la maceta -->
+    <div class="side-cluster-container left" id="leftClusters"></div>
+    <div class="side-cluster-container right" id="rightClusters"></div>
+  </div>
+
+  <div class="instruction" id="instruction">Toca la maceta para florecer nuestro jardín 🌻</div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<div class="popup" id="popup">
+  <div class="tag">Para el amor de mi vida</div>
+  <h2>Siempre tú</h2>
+  <p>
+    Si pudiera elegir un lugar seguro en este mundo, sería siempre a tu lado. 
+    Gracias por llenar mis días de luz como un girasol y de tanta ternura en cada rincón de nuestra historia. 
+    Te amo hoy, mañana y siempre. ❤️
+  </p>
+  <button class="close-btn" id="closeBtn">Guardar en el corazón</button>
+</div>
+
+<script>
+const ambientContainer = document.getElementById('ambientHearts');
+const symbols = ['🌻', '✨', '💛', '🌸'];
+for(let i=0; i<15; i++){
+  const span = document.createElement('span');
+  span.className = 'ambient-heart';
+  span.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+  span.style.left = Math.random() * 100 + '%';
+  span.style.top = Math.random() * 100 + '%';
+  span.style.animationDuration = (8 + Math.random() * 10) + 's';
+  span.style.animationDelay = (Math.random() * 5) + 's';
+  ambientContainer.appendChild(span);
+}
+
+const plantArea = document.getElementById('plantArea');
+const stem = document.getElementById('stem');
+const flower = document.getElementById('flower');
+const leftClusters = document.getElementById('leftClusters');
+const rightClusters = document.getElementById('rightClusters');
+const instruction = document.getElementById('instruction');
+const overlay = document.getElementById('overlay');
+const popup = document.getElementById('popup');
+const closeBtn = document.getElementById('closeBtn');
+
+const messages = [
+  "Porque haces que hasta mis días más grises se vuelvan luminosos con una sola sonrisa.",
+  "Porque contigo aprendí que el hogar no es un lugar, sino la persona con la que estás.",
+  "Porque tu forma de cuidar los detalles hace que te ame un poco más cada mañana.",
+  "Porque cuando imagino mi futuro, no hay un solo instante en el que no estés tú."
+];
+
+let step = 0;
+
+function buildSunflower() {
+  flower.innerHTML = '';
+  const totalPetals = 16;
+  for(let i=0; i<totalPetals; i++){
+    const petal = document.createElement('span');
+    petal.className = 'petal';
+    petal.style.transform = `translate(-50%, -100%) rotate(${i * (360 / totalPetals)}deg)`;
+    flower.appendChild(petal);
+  }
+  const center = document.createElement('span');
+  center.className = 'flower-center';
+  flower.appendChild(center);
+}
+
+function buildSideClusters() {
+  leftClusters.innerHTML = '';
+  rightClusters.innerHTML = '';
+
+  for(let i = 0; i < 4; i++) {
+    const clusterL = createClusterElement(i, 'left');
+    leftClusters.appendChild(clusterL);
+
+    const clusterR = createClusterElement(i, 'right');
+    rightClusters.appendChild(clusterR);
+  }
+}
+
+function createClusterElement(index, side) {
+  const cluster = document.createElement('div');
+  cluster.className = 'pot-cluster';
+  cluster.id = `cluster_${side}_${index}`;
+  cluster.style.bottom = (index * 18) + 'px';
+
+  const grass = document.createElement('div');
+  grass.className = 'cluster-grass';
+
+  const rosesGroup = document.createElement('div');
+  rosesGroup.className = 'cluster-roses-group';
+
+  for(let r = 0; r < 3; r++) {
+    const rose = document.createElement('div');
+    rose.className = 'cluster-rose';
+    const layer = document.createElement('div');
+    layer.className = 'rose-petal-layer';
+    const swirl1 = document.createElement('div');
+    swirl1.className = 'rose-swirl-1';
+    const swirl2 = document.createElement('div');
+    swirl2.className = 'rose-swirl-2';
+
+    rose.appendChild(layer);
+    rose.appendChild(swirl1);
+    rose.appendChild(swirl2);
+    rosesGroup.appendChild(rose);
+  }
+
+  if(side === 'left') {
+    cluster.appendChild(grass);
+    cluster.appendChild(rosesGroup);
+  } else {
+    cluster.appendChild(rosesGroup);
+    cluster.appendChild(grass);
+  }
+
+  return cluster;
+}
+
+function showClusterStep(currentStep) {
+  const leftEl = document.getElementById(`cluster_left_${currentStep}`);
+  const rightEl = document.getElementById(`cluster_right_${currentStep}`);
+  if(leftEl) leftEl.classList.add('show');
+  if(rightEl) rightEl.classList.add('show');
+}
+
+function showReason(index) {
+  for(let j=0; j<4; j++){
+    const prev = document.getElementById('r' + (j+1));
+    if(j !== index) prev.classList.remove('show');
+  }
+  const current = document.getElementById('r' + (index + 1));
+  current.textContent = messages[index];
+  current.classList.add('show');
+}
+
+function createHeartConfetti() {
+  const confSymbols = ['🌻', '💖', '🌸', '✨', '💛'];
+  for(let i=0; i<60; i++){
+    const el = document.createElement('span');
+    el.className = 'heart-confetti';
+    el.textContent = confSymbols[Math.floor(Math.random() * confSymbols.length)];
+    el.style.left = Math.random() * 100 + '%';
+    el.style.fontSize = (14 + Math.random() * 16) + 'px';
+    el.style.animationDuration = (2 + Math.random() * 2) + 's';
+    el.style.animationDelay = (Math.random() * 0.5) + 's';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+}
+
+plantArea.addEventListener('click', () => {
+  if(step >= 4) return;
+
+  if(step === 0) stem.style.height = '140px';
+  if(step === 1) stem.style.height = '185px';
+  if(step === 2) stem.style.height = '230px';
+  if(step === 3) stem.style.height = '275px';
+
+  showClusterStep(step);
+
+  const leaf = document.getElementById('leaf' + (step + 1));
+  setTimeout(() => leaf.classList.add('show'), 150);
+
+  showReason(step);
+  step++;
+
+  if(step < 4) {
+    instruction.textContent = `Toca de nuevo (${step}/4 razones)`;
+  } else {
+    instruction.textContent = '¡Toca una última vez para ver florecer el girasol!';
+    setTimeout(() => {
+      flower.classList.add('show');
+      instruction.textContent = 'Nuestro amor brilla como el sol 🌻💖';
+      
+      setTimeout(() => {
+        overlay.classList.add('show');
+        popup.classList.add('show');
+        createHeartConfetti();
+      }, 700);
+    }, 300);
+  }
+});
+
+closeBtn.addEventListener('click', () => {
+  popup.classList.remove('show');
+  overlay.classList.remove('show');
+  instruction.textContent = 'Te amo infinitamente ♥';
+});
+
+overlay.addEventListener('click', () => {
+  popup.classList.remove('show');
+  overlay.classList.remove('show');
+});
+
+buildSunflower();
+buildSideClusters();
+</script>
+</body>
+</html>
